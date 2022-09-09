@@ -1,32 +1,68 @@
 <template>
   <div id="app">
     <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/">Главная</router-link> |
+      <router-link to="/createuser">Создать нового пользователя</router-link> |
+      <router-link to="/updateuser">Редактировать пользователя</router-link> |
+      <router-link to="/zkjxdvzjidhf">Страница 404</router-link> |
+      <router-link
+        v-if="GET_AUTH_KEY"
+        class="custom__link"
+        tag="nav"
+        :to="{ name: 'logout' }"
+        >Выйти из созданного пользователя ('это ссылка') {{ GET_NAME }}
+      </router-link>
+      <div></div>
     </nav>
     <router-view />
   </div>
 </template>
 
+<script>
+import { mapGetters, mapActions } from "vuex";
+export default {
+  computed: {
+    ...mapGetters(["GET_NAME", "GET_AUTH_KEY"]),
+  },
+  methods: {
+    ...mapActions(["getUser"]),
+  },
+  mounted() {
+    this.getUser();
+  },
+};
+</script>
+
 <style>
+body {
+  background-color: #ccc;
+  box-sizing: border-box;
+}
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  color: #2c3e50;
 }
-
 nav {
-  padding: 30px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
 }
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
-
-nav a.router-link-exact-active {
-  color: #42b983;
+.form ::placeholder {
+  text-align: center;
+}
+input {
+  margin-bottom: 0.5em;
+  width: 100%;
+}
+.custom__link {
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: lowercase;
 }
 </style>
