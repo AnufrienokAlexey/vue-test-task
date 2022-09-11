@@ -1,28 +1,33 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Главная</router-link> |
-      <router-link to="/createuser">Создать нового пользователя</router-link> |
-      <router-link to="/updateuser">Редактировать пользователя</router-link> |
-      <router-link to="/zkjxdvzjidhf">Страница 404</router-link> |
-      <router-link
-        v-if="GET_AUTH_KEY"
-        class="custom__link"
-        tag="nav"
-        :to="{ name: 'logout' }"
-        >Выйти из созданного пользователя ('это ссылка') {{ GET_NAME }}
-      </router-link>
-      <div></div>
-    </nav>
+    <b-navbar type="dark" variant="dark">
+      <b-navbar-nav>
+        <router-link tag="b-nav-item" to="/">Главная</router-link>
+        <router-link tag="b-nav-item" to="/createuser"
+          >Создать нового пользователя</router-link
+        >
+        <router-link tag="b-nav-item" to="/updateuser"
+          >Редактировать пользователя</router-link
+        >
+        <router-link tag="b-nav-item" to="/zkjxdvzjidhf"
+          >Страница 404</router-link
+        >
+        <router-link tag="b-nav-item" v-if="GET_AUTH_KEY" to="/logout"
+          >Выйти из пользователя
+        </router-link>
+      </b-navbar-nav>
+    </b-navbar>
     <router-view />
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 export default {
   computed: {
-    ...mapGetters(["GET_NAME", "GET_AUTH_KEY"]),
+    ...mapGetters(["GET_AUTH_KEY"]),
   },
   methods: {
     ...mapActions(["getUser"]),
@@ -41,12 +46,12 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  align-items: center;
   text-align: center;
 }
-nav {
+.navbar {
+  display: flex;
+  justify-content: center;
   text-transform: uppercase;
-  margin-bottom: 18px;
 }
 .form {
   width: 100%;
@@ -59,10 +64,5 @@ nav {
 input {
   margin-bottom: 0.5em;
   width: 100%;
-}
-.custom__link {
-  font-size: 0.9em;
-  cursor: pointer;
-  text-transform: lowercase;
 }
 </style>

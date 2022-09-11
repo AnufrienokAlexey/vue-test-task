@@ -1,31 +1,45 @@
 <template>
   <div>
     <div v-if="GET_AUTH_KEY">
-      <p>Ваше имя: {{ GET_NAME }}</p>
-      <p>Ваш email: {{ GET_EMAIL }}</p>
-      <p>Ваш телефон: {{ GET_PHONE }}</p>
-      <button @click.prevent="logout">
-        Выйти из под пользователя {{ GET_NAME }}
-      </button>
+      <h3>Данные Вашего пользователя:</h3>
+      <h5>Ваш ключ аутенфикации: {{ GET_AUTH_KEY }}</h5>
+      <h5>Ваше ФИО: {{ GET_NAME }}</h5>
+      <h5>Ваш email: {{ GET_EMAIL }}</h5>
+      <h5>
+        Ваш телефон:
+        <span v-if="GET_PHONE">
+          {{ GET_PHONE }}
+        </span>
+        <span v-else>
+          Не указан. Вы можете добавить его в меню
+          <router-link :to="{ name: 'update' }">
+            <b-button variant="info">Редактировать пользователя </b-button>
+          </router-link>
+        </span>
+      </h5>
+      <router-link :to="{ name: 'create' }">
+        <b-button variant="info" @click.prevent="logout"
+          >Выйти из пользователя
+        </b-button>
+      </router-link>
     </div>
-    <p v-else>
-      Перейти на страницу создания пользователя?
-      <router-link :to="{ name: 'create' }">Перейти!</router-link>
-    </p>
-    <h3>Комментарий к данной странице:</h3>
-    <p>
-      Если сразу после создания пользователя мы придем на эту страницу то увидим
-      что поле телефона будет пустое. А если мы зайдем сюда после редактирования
-      на странице редактирования - оно появиться в отображении На этой странице
-      когда мы кликаем по кнопке мы очищаем ключ аутенфикации в localStorage,
-      тем самым делая выход из приложения пользователя (и мы можем снова создать
-      нового пользователя)
-    </p>
+    <b-alert v-else show variant="info"
+      >{{ message }}
+      <router-link :to="{ name: 'create' }">
+        <b-button variant="info">Перейти!</b-button>
+      </router-link>
+    </b-alert>
   </div>
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex";
 export default {
+  data() {
+    return {
+      message:
+        "Сначала надо создать пользователя... Перейти на страницу создания пользователя?",
+    };
+  },
   methods: {
     ...mapActions(["logout"]),
   },
