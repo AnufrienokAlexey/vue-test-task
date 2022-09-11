@@ -2,101 +2,126 @@
   <div class="form__update">
     <div class="form" v-if="GET_AUTH_KEY">
       <form action="#" @submit.prevent="updateUser">
-        <!-- <BaseFormText
-        v-model="formData.name"
-        title="ФИО"
-        :error="formError.name"
-        placeholder="Введите Ваше полное имя*"
-      />
-      <BaseFormText
-        v-model="formData.email"
-        title="Email"
-        :error="formError.email"
-        placeholder="Введите ваш Email*"
-      />
-      <BaseFormText
-        v-model="formData.phone"
-        title="Телефон"
-        :error="formError.phone"
-        placeholder="Введите ваш телефон*"
-      /> -->
-        <input type="text" v-model="name" :placeholder="placeholderName" />
-        <input
-          type="email"
-          v-model="email"
-          :placeholder="placeholderEmail"
-          required
-        />
-        <input
-          type="tel"
-          v-model="phone"
-          :placeholder="placeholderPhone"
-          maxlength="16"
-          v-mask="'+7(###)###-##-##'"
-        />
-        <button type="submit" @submit.prevent="updateUser">
-          Редактировать
-        </button>
+        <b-form-group :label="labelName" label-for="input__name">
+          <b-form-input
+            v-model="name"
+            id="input__name"
+            :placeholder="placeholderName"
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group :label="labelEmail" label-for="input__email">
+          <b-form-input
+            id="input__email"
+            v-model="email"
+            type="email"
+            :placeholder="placeholderEmail"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-form-group :label="labelPhone" label-for="input__phone">
+          <b-form-input
+            v-model="phone"
+            id="input__phone"
+            :placeholder="placeholderPhone"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <div v-if="errors !== []">
+          <h3>Ошибки валидации:</h3>
+          <p v-for="error in errors" :key="error">{{ error }}</p>
+        </div>
+        <b-button variant="dark" type="submit" @submit.prevent="updateUser"
+          >Редактировать
+        </b-button>
       </form>
-      <p>Цена: {{ newNumber | numberFormat }} Рублей</p>
       <div v-if="GET_AUTH_KEY">
-        Вы успешно создали пользователя:
-        <h5>Ваш ключ аутенфикации GET_AUTH_KEY: {{ GET_AUTH_KEY }}</h5>
-        <h5>Ваше ФИО GET_NAME: {{ GET_NAME }}</h5>
-        <h5>Ваш email GET_EMAIL: {{ GET_EMAIL }}</h5>
-        <h5 v-if="GET_PHONE">Ваш email GET_PHONE: {{ GET_PHONE }}</h5>
+        <h3>Данные Вашего пользователя:</h3>
+        <h5>Ваш ключ аутенфикации: {{ GET_AUTH_KEY }}</h5>
+        <h5>Ваше ФИО: {{ GET_NAME }}</h5>
+        <h5>Ваш email: {{ GET_EMAIL }}</h5>
+        <h5 v-if="GET_PHONE">Ваш телефон: {{ GET_PHONE }}</h5>
       </div>
     </div>
-    <div v-else>
-      Сначала надо создать пользователя... Перейти на страницу создания
-      пользователя?
-      <router-link :to="{ name: 'create' }">Перейти!</router-link>
-    </div>
-    <h3>Комментарий к данной странице:</h3>
-    <p>
-      Кастомный заголовок x-actions-id из patch-запроса невозможно получить -
-      для фронтенда сервер долже передать его в access-control-expose-headers.
-      "Цена: 1 234 567 890 Рублей"- демонстрация работы фильтров (в данном
-      случае фильтра цены)
-    </p>
+    <b-alert v-else show variant="danger"
+      >{{ message }}
+      <router-link :to="{ name: 'create' }">
+        <b-button variant="success">Перейти!</b-button>
+      </router-link>
+    </b-alert>
   </div>
 </template>
 
 <script>
 import numberFormat from "@/helpers/numberFormat";
 import { mapGetters, mapActions } from "vuex";
-import { required, minLength } from "vuelidate/lib/validators";
-// import BaseFormText from "@/components/BaseFormText";
+import {
+  required,
+  email,
+  numeric,
+  minLength,
+  maxLength,
+  alpha,
+} from "vuelidate/lib/validators";
+
 export default {
-  // components: { BaseFormText },
   data() {
     return {
-      newNumber: 1234567890,
-      formData: {},
-      formError: {},
       name: "",
       email: "",
       phone: "",
-      placeholderName: "Введите ФИО пользователя",
-      placeholderEmail: "Введите email",
-      placeholderPhone: "Введите телефон (минимум 10 цифр)",
+      labelName: "Редактировать ФИО:",
+      labelEmail: "Редактировать Email:",
+      labelPhone: "Редактировать телефон:",
+      placeholderName: "Введите ФИО для изменения",
+      placeholderEmail: "Введите email для изменения",
+      placeholderPhone: "Введите телефон для изменения",
+      auth_key: null,
+      errorMessage: "Упс! Ошибочка :)",
+      message:
+        "Сначала надо создать пользователя... Перейти на страницу создания пользователя?",
     };
   },
   filters: { numberFormat },
   validations: {
     phone: {
       required,
-      minLength: minLength(10),
+      numeric,
+    },
+    email: {
+      required,
+      email,
+    },
+    name: {
+      required,
+      minLength: minLength(5),
+      maxLength: maxLength(120),
+      alpha,
     },
   },
   computed: {
-    ...mapGetters([
-      "GET_AUTH_KEY",
-      "GET_NAME",
-      "GET_EMAIL",
-      "GET_PHONE",
-      // "SET_XACTIONID",
-    ]),
+    ...mapGetters(["GET_AUTH_KEY", "GET_NAME", "GET_EMAIL", "GET_PHONE"]),
+    errors() {
+      const errors = [];
+      if (
+        !this.$v.name.required ||
+        !this.$v.email.required ||
+        !this.$v.phone.required
+      ) {
+        errors.push("Заполните, пожалуйста, все поля");
+      }
+      if (
+        !this.$v.name.alpha ||
+        !this.$v.name.minLength ||
+        !this.$v.name.maxLength
+      )
+        errors.push(
+          "Имя должно содержать только от 5 до 120 букв латинского алфавита"
+        );
+      if (!this.$v.email.email) errors.push("Не валидный email");
+      if (!this.$v.phone.numeric || this.phone.length !== 10)
+        errors.push("Телефон должен сожержать только 10 цифр");
+      return errors;
+    },
   },
   watch: {
     name() {
@@ -117,6 +142,5 @@ export default {
       this.$store.commit("SET_AUTH_KEY", localStorage.getItem("auth_key"));
     }
   },
-  directives: {},
 };
 </script>

@@ -1,15 +1,24 @@
 <template>
-  <div>
-    <h1>Главная страница не найдена :)</h1>
-    <h3>Комментарий к данной странице:</h3>
-    <p>
-      На эту страницу будет идти переадресация с любого пути из адресной строки,
-      кроме тех что указаны в router/index.js выше обьекта с path = "*". Поэтому
-      эту страницу 404 необходимо прописывать в том файле ниже после всех других
-      страниц.
-    </p>
+  <div
+    class="not-found-page"
+    :style="{
+      'background-image': `url(${require('@/assets/images/404.jpg')})`,
+      height: '100%',
+    }"
+  >
+    <h1>Ошибка 404. Страница не найдена</h1>
   </div>
 </template>
 <script>
 export default {};
 </script>
+<style>
+#app {
+  height: 100vh;
+}
+.not-found-page {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+</style>
