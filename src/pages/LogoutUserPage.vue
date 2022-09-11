@@ -17,11 +17,13 @@
           </router-link>
         </span>
       </h5>
-      <router-link :to="{ name: 'create' }">
-        <b-button variant="info" @click.prevent="logout"
-          >Выйти из пользователя
-        </b-button>
-      </router-link>
+      <b-alert show variant="info">
+        <router-link :to="{ name: 'create' }">
+          <b-button variant="info" @click.prevent="logout"
+            >Выйти из пользователя
+          </b-button>
+        </router-link>
+      </b-alert>
     </div>
     <b-alert v-else show variant="info"
       >{{ message }}

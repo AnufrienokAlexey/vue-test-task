@@ -24,17 +24,20 @@
             id="input__phone"
             :placeholder="placeholderPhone"
             required
+            v-mask="'+7 (###) ###-##-##'"
           ></b-form-input>
         </b-form-group>
         <div v-if="errors !== []">
-          <h3>Ошибки валидации:</h3>
           <p v-for="error in errors" :key="error">{{ error }}</p>
         </div>
-        <b-button variant="dark" type="submit" @submit.prevent="updateUser"
-          >Редактировать
-        </b-button>
+        <b-alert show variant="info">
+          <b-button variant="info" type="submit" @submit.prevent="updateUser"
+            >Редактировать
+          </b-button>
+        </b-alert>
+        <div v-if="GET_MESSAGE">{{ GET_MESSAGE }}</div>
       </form>
-      <div v-if="GET_AUTH_KEY">
+      <div v-if="GET_MESSAGE">
         <h3>Данные Вашего пользователя:</h3>
         <h5>Ваш ключ аутенфикации: {{ GET_AUTH_KEY }}</h5>
         <h5>Ваше ФИО: {{ GET_NAME }}</h5>
@@ -57,7 +60,6 @@ import { mapGetters, mapActions } from "vuex";
 import {
   required,
   email,
-  numeric,
   minLength,
   maxLength,
   alpha,
@@ -85,7 +87,6 @@ export default {
   validations: {
     phone: {
       required,
-      numeric,
     },
     email: {
       required,
@@ -99,7 +100,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["GET_AUTH_KEY", "GET_NAME", "GET_EMAIL", "GET_PHONE"]),
+    ...mapGetters([
+      "GET_AUTH_KEY",
+      "GET_NAME",
+      "GET_EMAIL",
+      "GET_PHONE",
+      "GET_MESSAGE",
+    ]),
     errors() {
       const errors = [];
       if (
@@ -118,8 +125,10 @@ export default {
           "Имя должно содержать только от 5 до 120 букв латинского алфавита"
         );
       if (!this.$v.email.email) errors.push("Не валидный email");
-      if (!this.$v.phone.numeric || this.phone.length !== 10)
+      if (this.phone.length !== 18) {
         errors.push("Телефон должен сожержать только 10 цифр");
+      }
+
       return errors;
     },
   },

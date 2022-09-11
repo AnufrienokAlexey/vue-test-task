@@ -13,6 +13,7 @@ export default new Vuex.Store({
     phone: null,
     xActionId: null,
     error: "",
+    messageSuccess: "",
   },
   mutations: {
     SET_AUTH_KEY(state, payload) {
@@ -32,6 +33,9 @@ export default new Vuex.Store({
     },
     SET_ERROR(state, payload) {
       state.error = payload;
+    },
+    SET_MESSAGE(state, payload) {
+      state.messageSuccess = payload;
     },
   },
   getters: {
@@ -53,6 +57,9 @@ export default new Vuex.Store({
     GET_ERROR(state) {
       return state.error;
     },
+    GET_MESSAGE(state) {
+      return state.messageSuccess;
+    },
   },
   actions: {
     logout(context) {
@@ -70,6 +77,7 @@ export default new Vuex.Store({
           .then((response) => {
             context.commit("SET_AUTH_KEY", response.data.auth_key);
             context.commit("SET_NAME", response.data.name);
+            context.commit("SET_PHONE", response.data.phone);
             context.commit("SET_EMAIL", response.data.email);
           });
       }
@@ -119,6 +127,10 @@ export default new Vuex.Store({
 
       return axios(config)
         .then((response) => {
+          context.commit(
+            "SET_MESSAGE",
+            "Вы успешно отредактировали пользователя!"
+          );
           context.commit("SET_XACTIONID", response.data.auth_key);
         })
         .catch(function (error) {

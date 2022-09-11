@@ -22,12 +22,13 @@
         }}</b-alert>
       </b-form-group>
       <div v-if="errors !== []">
-        <h3>Ошибки валидации:</h3>
         <p v-for="error in errors" :key="error">{{ error }}</p>
       </div>
-      <b-button variant="dark" type="submit"
-        >Создать нового пользователя
-      </b-button>
+      <b-alert show variant="info">
+        <b-button variant="info" type="submit"
+          >Создать нового пользователя
+        </b-button>
+      </b-alert>
     </b-form>
     <b-alert v-else show variant="success"
       >{{ successMessage }}
